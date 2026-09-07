@@ -7,27 +7,26 @@ import importlib.util
 import librosa
 
 # 1. Base Paths Configuration
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Adjust relative path if this file is placed inside backend/
-MODEL_PATH = os.path.join(BASE_DIR, "python/RawNet3/models/weights/model.pt")
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+# Step out of 'backend' and into 'ml'
+ML_DIR = os.path.join(os.path.dirname(BACKEND_DIR), "ml")
+
+MODEL_PATH = None
+rawnet3_script_path = None
+
+# Dynamically hunt for Saksham's files inside the ml/ folder
+for root, dirs, files in os.walk(ML_DIR):
+    if "model.pt" in files and not MODEL_PATH:
+        MODEL_PATH = os.path.join(root, "model.pt")
+    if "RawNet3.py" in files and not rawnet3_script_path:
+        rawnet3_script_path = os.path.join(root, "RawNet3.py")
+
+if not rawnet3_script_path:
+    raise FileNotFoundError(f"Could not locate 'RawNet3.py' inside {ML_DIR}")
+if not MODEL_PATH:
+    raise FileNotFoundError(f"Could not locate 'model.pt' inside {ML_DIR}")
 
 # 2. Locate and import RawNet3 architecture
-rawnet3_script_path = None
-for root, dirs, files in os.walk(BASE_DIR):
-    if "RawNet3.py" in files:
-        rawnet3_script_path = os.path.join(root, "RawNet3.py")
-        break
-
-if not rawnet3_script_path:
-    # Fallback to look one directory up if needed
-    for root, dirs, files in os.walk(os.path.dirname(BASE_DIR)):
-        if "RawNet3.py" in files:
-            rawnet3_script_path = os.path.join(root, "RawNet3.py")
-            break
-
-if not rawnet3_script_path:
-    raise FileNotFoundError("Could not locate 'RawNet3.py' in project tree.")
-
 parent_dir = os.path.dirname(os.path.abspath(rawnet3_script_path))
 grandparent_dir = os.path.dirname(parent_dir)
 
@@ -96,7 +95,6 @@ def evaluate_audio_authenticity(file_path: str) -> float:
         norm_emb = torch.nn.functional.normalize(embedding, p=2, dim=-1)
         raw_var = torch.var(norm_emb).item()
         
-        # Saksham's calculation logic
         prob = 1.0 / (1.0 + np.exp(-(raw_var - 0.0038) * 4000.0))
         real_percentage = float(np.clip(prob * 100.0, 1.0, 99.0))
         spoof_probability = (100.0 - real_percentage) / 100.0
