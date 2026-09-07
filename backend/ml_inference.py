@@ -14,7 +14,6 @@ ML_DIR = os.path.join(os.path.dirname(BACKEND_DIR), "ml")
 MODEL_PATH = None
 rawnet3_script_path = None
 
-# Dynamically hunt for Saksham's files inside the ml/ folder
 for root, dirs, files in os.walk(ML_DIR):
     if "model.pt" in files and not MODEL_PATH:
         MODEL_PATH = os.path.join(root, "model.pt")
