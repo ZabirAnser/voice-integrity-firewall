@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Security Prototype</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Deepfake Voice Detector</h2>
+        <p class="subtitle">Upload a suspicious voice note to analyze acoustic AI markers.</p>
+        
+        <form id="upload-form">
+            <div class="upload-section">
+                <input type="file" id="audio-file" accept=".wav, .mp3, .m4a, .ogg" required>
+            </div>
+            <button type="submit" id="submit-btn">Analyze Audio Engine</button>
+        </form>
+
+        <div id="loader" class="loader">Extracting acoustic signatures...</div>
+
+        <div id="result-section">
+            <h3 id="risk-title">Risk Level: <span></span></h3>
+            <div class="result-item"><strong>Probability Score:</strong> <span id="score-text"></span>%</div>
+            <div class="result-item"><strong>Duration:</strong> <span id="duration-text"></span> sec</div>
+            <div class="result-item"><strong>Summary:</strong> <span id="summary-text"></span></div>
+            <div class="result-item"><strong>Action:</strong> <span id="action-text"></span></div>
+        </div>
+    </div>
+</body>
+</html>
